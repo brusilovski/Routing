@@ -2,26 +2,19 @@
  * Created by brusilovski on 4/19/15.
  */
 
-var aMailServices = angular.module('AMail', []);
-console.log('scope is ' + scope);
-
-function emailRouterConfig($routerProvider)
-{
-    $routerProvider.
-        when('/', {
-        controller: ListController,
-        templateUrl: 'list.html'
-    }).
-        when('/view/:id', {
-            controller: DetailController,
-            templateUrl: 'detail.html'
-        }).
-        otherwise({
-            redirectTo: '/'
-        })
-}
+var aMailServices = angular.module('AMail', ['ngRoute']);
 
 aMailServices.config(emailRouterConfig);
+
+aMailServices.directive('ngbkFocus', function(){
+    return {
+        link: function(scope, element, attrs, controller){
+            element[0].focus();
+        }
+    };
+});
+
+aMailServices.controller('SomeController', ['$scope', SomeController]);
 
 messages = [
     {
@@ -50,11 +43,53 @@ messages = [
     }
 ];
 
+function emailRouterConfig($routeProvider)
+{
+    $routeProvider.
+        when('/', {
+            controller: ListController,
+            templateUrl: 'list.html'
+        }).
+        when('/view/:id', {
+            controller: DetailController,
+            templateUrl: 'detail.html'
+        }).
+        when('/signup', {
+            controller: AddUserController,
+            templateUrl: 'signup.html'
+        }).
+        otherwise({
+            redirectTo: '/'
+        })
+}
+
 function ListController($scope){
-    $scope.message = messages;
+    $scope.messages = messages;
 }
 
 function DetailController($scope, $routeParams)
 {
-    $scope.message = message[$routeParams.id];
+    $scope.message = messages[$routeParams.id];
+}
+
+function SomeController($scope)
+{
+    $scope.message = {text: 'nothing clicked yet'};
+
+    $scope.clickedUnfocused = function(){
+        $scope.message.text = 'unfocused button clicked';
+    }
+
+    $scope.clickedFocused = function(){
+        $scope.message.text = 'focused button clicked';
+    }
+}
+
+function AddUserController($scope)
+{
+$scope.message = '';
+
+    $scope.addUser = function(){
+        $scope.message = 'Thanks! User was added.';
+    }
 }
